@@ -35,13 +35,13 @@ class _MyAppState extends State<MyApp> {
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                   ),
+                  markerLayerOptions,
                 ],
               ),
             ),
             TextButton(
               child: const Text('Ajouter des marqueurs'),
               onPressed: () {
-                // Appeler addMarkers avec une liste de coordonnées de test
                 addMarkers([
                   LatLng(47.4667, -0.55),
                   LatLng(47.448607, -0.562932),
