@@ -1,20 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final arretsRepository = ArretsRepository();
+  await arretsRepository.init();
+  runApp(MyApp(arretsRepository: arretsRepository));
 }
 
 class MyApp extends StatefulWidget {
+  final ArretsRepository arretsRepository;
+
+  const MyApp({Key? key, required this.arretsRepository}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   MarkerLayer markerLayerOptions = const MarkerLayer(markers: []);
+  late Map<String, dynamic> _arretsData;
+  late List<LatLng> _arretsCoords;
 
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _arretsData = widget.arretsRepository.arretsData;
+
+    _arretsCoords = _arretsData["records"]
+        .map<LatLng>((record) => LatLng(record["geometry"]["coordinates"][1],
+            record["geometry"]["coordinates"][0]))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +63,7 @@ class _MyAppState extends State<MyApp> {
             TextButton(
               child: const Text('Ajouter des marqueurs'),
               onPressed: () {
-                addMarkers([
-                  LatLng(47.4667, -0.55),
-                  LatLng(47.448607, -0.562932),
-                  LatLng(47.460812, -0.554723),
-                ]);
+                addMarkers(_arretsCoords);
               },
             ),
           ],
