@@ -8,9 +8,9 @@ class ArretsRepository {
     _arretsData = await fetchData();
   }
 
-  Future<Map<String, dynamic>> fetchData() async {
+  Future<Map<String, dynamic>> fetchData({String query = ''}) async {
     final response = await http.get(Uri.parse(
-        'https://data.angers.fr/api/records/1.0/search/?dataset=horaires-theoriques-et-arrets-du-reseau-irigo-gtfs&q=&rows=5000&facet=stop_id&facet=stop_name&facet=wheelchair_boarding&timezone=Europe%2FParis'));
+        'https://data.angers.fr/api/records/1.0/search/?dataset=horaires-theoriques-et-arrets-du-reseau-irigo-gtfs&q=$query&rows=5000&facet=stop_id&facet=stop_name&facet=wheelchair_boarding&timezone=Europe%2FParis'));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
