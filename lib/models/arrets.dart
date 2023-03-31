@@ -15,7 +15,7 @@ class Arrets {
   }
 
   factory Arrets.fromJson(Map<String, dynamic> json) {
-    return LatLng(
+    return Arrets(
       street: json['street'],
       city: json['city'],
       postcode: json['postcode'],
