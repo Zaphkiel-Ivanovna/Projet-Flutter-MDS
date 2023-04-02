@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ArretsRepository {
-  late Map<String, dynamic> _arretsData;
+  Map<String, dynamic> _arretsData = {};
 
   Future<void> init() async {
     _arretsData = await fetchData();
