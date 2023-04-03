@@ -35,60 +35,53 @@ class _MyAppState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
         body: Column(
-          children: [
-            Flexible(
-              child: FlutterMap(
-                mapController: _mapController, // Ajoutez cette ligne
-                options: MapOptions(
-                  center: LatLng(47.4667, -0.55),
-                  zoom: 13.0,
-                  maxZoom: 19.0,
+      children: [
+        Expanded(
+          child: Container(
+            color: Color(0xFFF2F2F2),
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                center: LatLng(47.4667, -0.55),
+                zoom: 13.0,
+                maxZoom: 18.0,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                 ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                  ),
-                  markerLayerOptions,
-                ],
-              ),
+                markerLayerOptions,
+              ],
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                border: Border.all(color: Colors.grey),
+          ),
+        ),
+        Container(
+          color: Color(0xFF8B0000),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Rechercher un arrêt',
+              filled: true,
+              fillColor: Color(0xFF600000),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Recherche',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                      ),
-                      onSubmitted: (String value) {
-                        _performSearch(value);
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      _performSearch(_searchController.text);
-                    },
-                  ),
-                ],
-              ),
+              prefixIcon: Icon(Icons.search, color: Colors.white),
+              hintStyle: TextStyle(color: Colors.white),
             ),
-          ],
-        )
-      );
+            style: TextStyle(color: Colors.white),
+            onSubmitted: (String value) {
+              _performSearch(value);
+            },
+          ),
+        ),
+      ],
+    ));
   }
 
   void _performSearch(String query) async {
