@@ -8,7 +8,7 @@ import 'package:projet_flutter_mds/ui/screens/home_screen.dart';
 import 'ui/screens/lignes_screen.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:projet_flutter_mds/provider/lignes_provider.dart';
 import 'package:projet_flutter_mds/ui/screens/itinerary_screen.dart';
 import '../../repositories/lignes_repository.dart';
 import '../../models/lignes.dart';
@@ -87,6 +89,21 @@ class _LigneScreenState extends State<LignesScreen> {
                               ),
                             ),
                             title: Text(lignes[index].route_long_name),
+                            trailing: IconButton(
+                              icon: Icon(
+                                lignes[index].isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: lignes[index].isFavorite
+                                    ? Colors.red
+                                    : null,
+                              ),
+                              onPressed: () {
+                                Provider.of<Lignesnotifier>(context,
+                                        listen: false)
+                                    .toggleFavorite(lignes[index], index);
+                              },
+                            ),
                             onTap: () {
                               var coordinates = lignes[index]
                                   .coordinates
@@ -133,7 +150,8 @@ class _LigneScreenState extends State<LignesScreen> {
   Future<List<Lignes>> _fetchData() async {
     final response = await widget.lignesRepository.fetchData();
     _allLignes = response
-        .map<Lignes>((record) => Lignes.fromJson(record.route_long_name, record.route_short_name, record.route_color, record.coordinates))
+        .map<Lignes>((record) => Lignes.fromJson(record.route_long_name,
+            record.route_short_name, record.route_color, record.coordinates))
         .toList();
     return _allLignes;
   }

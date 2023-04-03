@@ -37,6 +37,12 @@ class Lignesnotifier extends StateNotifier<List<Lignes>> {
 
   //passer les preference en tant que liste initial
 
+  void toggleFavorite(Lignes ligne, int index) {
+    ligne.toggleFavorite();
+    updateAdr(ligne, index);
+    state = [...state];
+  }
+
   void add(Lignes lignes) {
     saveAdr(lignes);
     state = [...state, lignes];
@@ -57,6 +63,12 @@ class Lignesnotifier extends StateNotifier<List<Lignes>> {
   void getLignes() async {
     List<Lignes> lignesList = await getPoint();
     state = lignesList;
+  }
+
+  Future<void> updateAdr(Lignes ligne, int index) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    listJson[index] = jsonEncode(ligne.toJson());
+    prefs.setStringList('lignes', listJson);
   }
 }
 
