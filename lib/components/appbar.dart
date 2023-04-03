@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:projet_flutter_mds/provider/lignes_provider.dart';
 import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
 import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
 import 'package:projet_flutter_mds/ui/screens/lignes_screen.dart';
@@ -6,13 +8,13 @@ import 'package:projet_flutter_mds/ui/screens/lignes_screen.dart';
 import '../ui/screens/favorites_screen.dart';
 import '../ui/screens/home_screen.dart';
 
-class BottomAppBarW extends StatelessWidget {
+class BottomAppBarW extends ConsumerWidget {
   const BottomAppBarW({super.key});
 
   static const String _title = 'Flutter Code Sample';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return const MaterialApp(
       title: _title,
       home: BottomAppBarWidget(),
@@ -20,14 +22,14 @@ class BottomAppBarW extends StatelessWidget {
   }
 }
 
-class BottomAppBarWidget extends StatefulWidget {
+class BottomAppBarWidget extends ConsumerStatefulWidget {
   const BottomAppBarWidget({super.key});
 
   @override
-  State<BottomAppBarWidget> createState() => BottomAppBarWidgetState();
+  ConsumerState<BottomAppBarWidget> createState() => BottomAppBarWidgetState();
 }
 
-class BottomAppBarWidgetState extends State<BottomAppBarWidget> {
+class BottomAppBarWidgetState extends ConsumerState<BottomAppBarWidget> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [];
   static const TextStyle optionStyle =
@@ -36,12 +38,15 @@ class BottomAppBarWidgetState extends State<BottomAppBarWidget> {
     super.initState();
     _widgetOptions.addAll([
       Home(arretsRepository: ArretsRepository()),
-      LignesScreen(lignesRepository: LignesRepository()),
+      LignesWidget(),
       Favorite()
     ]);
   }
 
   void _onItemTapped(int index) {
+    if (index == 2) {
+      ref.watch(lignesProvider.notifier).getLignes();
+    }
     setState(() {
       _selectedIndex = index;
     });

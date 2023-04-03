@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
-import '../../repositories/lignes_repository.dart';
-import '../../models/lignes.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:projet_flutter_mds/models/lignes.dart';
+import 'package:projet_flutter_mds/provider/lignes_provider.dart';
+import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
 
-class LignesScreen extends StatefulWidget {
-  final LignesRepository lignesRepository;
-  LignesScreen({Key? key, required this.lignesRepository}) : super(key: key);
+class LignesWidget extends ConsumerStatefulWidget {
+  const LignesWidget({super.key});
 
   @override
-  State<LignesScreen> createState() => _LigneScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => LignesWidgetState();
 }
 
-class _LigneScreenState extends State<LignesScreen> {
-  late Future<List<Lignes>> _lignesData;
-
-  @override
-  void initState() {
-    super.initState();
-    _lignesData = _performSearch();
-  }
-
+class LignesWidgetState extends ConsumerState {
+  List<Lignes> _lignes = [];
+  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    ListMode mode = ref.watch(listModeProviderState);
+    final getData = ref.watch(loadLignesPoint);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF8B0000),
-        title: Text('Lignes de transport'),
+        backgroundColor: const Color(0xFF8B0000),
+        title: const Text('Lignes de transport'),
       ),
       body: Container(
-        color: Color(0xFFF2F2F2),
+        color: const Color(0xFFF2F2F2),
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TextField(
+                controller: controller,
                 decoration: InputDecoration(
                   hintText: 'Rechercher une ligne',
                   filled: true,
@@ -41,71 +39,132 @@ class _LigneScreenState extends State<LignesScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: mode == ListMode.SEARCH
+                      ? IconButton(
+                          onPressed: () {
+                            controller.clear();
+                            ref
+                                .watch(listModeProviderState.notifier)
+                                .update((state) => ListMode.LIST);
+                          },
+                          icon: const Icon(
+                            Icons.cancel,
+                            size: 20,
+                          ),
+                        )
+                      : null,
                 ),
-                onChanged: (value) async {},
+                onChanged: (value) async {
+                  if (value.isEmpty) {
+                    ref
+                        .watch(listModeProviderState.notifier)
+                        .update((state) => ListMode.LIST);
+                  } else {
+                    ref
+                        .watch(listModeProviderState.notifier)
+                        .update((state) => ListMode.SEARCH);
+                  }
+                  final LignesRepository lignesRepo = LignesRepository();
+                  List<Lignes> lignesList = await lignesRepo.searchData(value);
+                  setState(() {
+                    _lignes = lignesList;
+                  });
+                },
               ),
             ),
             Expanded(
-              child: FutureBuilder<List<Lignes>>(
-                future: _lignesData,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Erreur lors de la récupération des données'));
-                  }
-                  final lignes = snapshot.data!;
-                  return ListView.separated(
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        child: ListTile(
-                          leading: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Color(int.parse(
-                                  '0xFF${lignes[index].route_color}')),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Center(
-                              child: Text(
-                                lignes[index].route_short_name,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+              child: mode == ListMode.LIST
+                  ? getData.when(
+                      data: (data) {
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              child: ListTile(
+                                leading: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Color(int.parse(
+                                        '0xFF${data[index].route_color}')),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      data[index].route_short_name,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                title: Text(data[index].route_long_name),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    ref
+                                        .watch(lignesProvider.notifier)
+                                        .add(data[index]);
+                                  },
+                                  icon: const Icon(Icons.bookmark_add),
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(height: 8);
+                          },
+                          itemCount: data.length,
+                        );
+                      },
+                      error: (Object error, StackTrace stackTrace) {
+                        print(error);
+                        print(stackTrace);
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      loading: () {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    )
+                  : ListView.separated(
+                      itemBuilder: (context, index) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          child: ListTile(
+                            leading: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Color(int.parse(
+                                    '0xFF${_lignes[index].route_color}')),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _lignes[index].route_short_name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
+                            title: Text(_lignes[index].route_long_name),
                           ),
-                          title: Text(lignes[index].route_long_name),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return SizedBox(height: 8);
-                    },
-                    itemCount: lignes.length,
-                  );
-                },
-              ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(height: 8);
+                      },
+                      itemCount: _lignes.length,
+                    ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Future<List<Lignes>> _performSearch() async {
-    final response = await widget.lignesRepository.fetchData();
-    final records = response['records'];
-    return records
-        .map<Lignes>((record) => Lignes.fromJson(record['fields']))
-        .toList();
   }
 }
