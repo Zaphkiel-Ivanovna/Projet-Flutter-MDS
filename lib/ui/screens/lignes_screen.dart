@@ -1,55 +1,111 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables
-
 import 'package:flutter/material.dart';
 import '../../repositories/lignes_repository.dart';
+import '../../models/lignes.dart';
 
-class Lignes extends StatefulWidget {
+class LignesScreen extends StatefulWidget {
   final LignesRepository lignesRepository;
-  Lignes({Key? key, required this.lignesRepository}) : super(key: key);
+  LignesScreen({Key? key, required this.lignesRepository}) : super(key: key);
 
   @override
-  State<Lignes> createState() => _LigneState();
+  State<LignesScreen> createState() => _LigneScreenState();
 }
 
-class _LigneState extends State<Lignes> {
+class _LigneScreenState extends State<LignesScreen> {
+  late Future<List<Lignes>> _lignesData;
+
+  @override
+  void initState() {
+    super.initState();
+    _lignesData = _performSearch();
+  }
+
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        body: Column(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF8B0000),
+        title: Text('Lignes de transport'),
+      ),
+      body: Container(
+        color: Color(0xFFF2F2F2),
+        child: Column(
           children: [
-            TextField(
-            onChanged: (value) async {
-              // if (value.length >= 3) {
-              //   final AddressRepository addressRepository = AddressRepository();
-              //   // Méthode 1
-              //   List<Address> addresses =
-              //       await addressRepository.fetchAddresses(value);
-              //   setState(() {
-              //     _addresses = addresses;
-              //   });
-              // }
-            },
-          ),
-          Expanded(
-            child:
-          ListView.separated(itemBuilder:((context, index) {
-            return ListTile(
-              leading: Text('1'),
-              title: Text('fgbrev'),
-              trailing: Text('rfgthtr'));
-          }), 
-          separatorBuilder: (context, index) {
-            return SizedBox(height: 8);
-          }, 
-          itemCount: 10
-          )
-          ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Rechercher une ligne',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (value) async {},
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder<List<Lignes>>(
+                future: _lignesData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                        child:
+                            Text('Erreur lors de la récupération des données'));
+                  }
+                  final lignes = snapshot.data!;
+                  return ListView.separated(
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        child: ListTile(
+                          leading: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Color(int.parse(
+                                  '0xFF${lignes[index].route_color}')),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Center(
+                              child: Text(
+                                lignes[index].route_short_name,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          title: Text(lignes[index].route_long_name),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return SizedBox(height: 8);
+                    },
+                    itemCount: lignes.length,
+                  );
+                },
+              ),
+            ),
           ],
-        )
-      );
-    }
-     void _performSearch() async {
-    _lignesData = await widget.lignesRepository.fetchData();
-    }
-}
+        ),
+      ),
+    );
+  }
 
+  Future<List<Lignes>> _performSearch() async {
+    final response = await widget.lignesRepository.fetchData();
+    final records = response['records'];
+    return records
+        .map<Lignes>((record) => Lignes.fromJson(record['fields']))
+        .toList();
+  }
+}
