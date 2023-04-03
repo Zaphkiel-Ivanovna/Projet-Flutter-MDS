@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
+import 'package:projet_flutter_mds/utils/map_utils.dart';
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 
 class Home extends StatefulWidget {
   final ArretsRepository arretsRepository;
@@ -14,24 +17,23 @@ class Home extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<Home> {
+class _MyAppState extends State<Home> with TickerProviderStateMixin {
   MarkerLayer markerLayerOptions = const MarkerLayer(markers: []);
   Map<String, dynamic> _arretsData = {};
   List<LatLng> _arretsCoords = [];
   final MapController _mapController = MapController();
+  late ByteData _busPinData;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // _arretsData = widget.arretsRepository.arretsData;
-
-    // _arretsCoords = _arretsData["records"]
-    //     .map<LatLng>((record) => LatLng(record["geometry"]["coordinates"][1],
-    //         record["geometry"]["coordinates"][0]))
-    //     .toList();
+    _loadBusPin();
   }
 
-  TextEditingController _searchController = TextEditingController();
+  Future<void> _loadBusPin() async {
+    _busPinData = await rootBundle.load('lib/assets/bus-station.svg');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +87,10 @@ class _MyAppState extends State<Home> {
   }
 
   void _performSearch(String query) async {
+    if (query.isEmpty || query.length < 4) {
+      return;
+    }
+
     _arretsData = await widget.arretsRepository.fetchData(query: query);
     _arretsCoords = _arretsData["records"]
         .map<LatLng>((record) => LatLng(record["geometry"]["coordinates"][1],
@@ -92,37 +98,36 @@ class _MyAppState extends State<Home> {
         .toList();
     addMarkers(_arretsCoords);
     if (_arretsCoords.isNotEmpty) {
-      _mapController.move(_arretsCoords.first, 18.0);
+      animatedMapMove(
+        _mapController,
+        _arretsCoords.first,
+        18.0,
+        this,
+      );
     }
   }
 
   void addMarkers(List<LatLng> points) {
-    final List<Marker> markers = [];
-    for (LatLng point in points) {
-      markers.add(
-        Marker(
-          width: 80.0,
-          height: 80.0,
-          point: point,
-          builder: (ctx) => Container(
-            // decoration: BoxDecoration(
-            //   color: Colors.blue.withOpacity(0.7),
-            //   borderRadius: BorderRadius.circular(100.0),
-            // ),
-            child: const Center(
-              child: Icon(
-                Icons.location_pin,
-                color: Color.fromARGB(255, 228, 61, 61),
-                size: 40.0,
-              ),
-            ),
+  final markers = <Marker>[];
+  for (var point in points) {
+    markers.add(
+      Marker(
+        width: 80.0,
+        height: 80.0,
+        point: point,
+        builder: (ctx) => Container(
+          child: SvgPicture.memory(
+            _busPinData.buffer.asUint8List(),
+            width: 5.0,
+            height: 5.0,
           ),
         ),
-      );
-    }
-
-    setState(() {
-      markerLayerOptions = MarkerLayer(markers: markers);
-    });
+      ),
+    );
   }
+
+  setState(() {
+    markerLayerOptions = MarkerLayer(markers: markers);
+  });
+}
 }

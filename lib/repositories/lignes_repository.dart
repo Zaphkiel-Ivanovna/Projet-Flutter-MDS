@@ -5,7 +5,7 @@ import 'package:projet_flutter_mds/models/lignes.dart';
 
 class LignesRepository {
   Future<List<Lignes>> fetchData() async {
-    List<Lignes> lignesList = [];
+    var lignesList = <Lignes>[];
     final response = await http.get(Uri.parse(
         'https://data.angers.fr/api/records/1.0/search/?dataset=irigo_gtfs_lines&rows=-1&facet=nomcourtligne&facet=numeroligne'));
     if (response.statusCode == 200) {
@@ -15,7 +15,8 @@ class LignesRepository {
         lignesList.add(Lignes.fromJson(
             infoLignes[i]['fields']['route_long_name'].toString(),
             infoLignes[i]['fields']['route_short_name'].toString(),
-            infoLignes[i]['fields']['route_color'].toString()));
+            infoLignes[i]['fields']['route_color'].toString(),
+            infoLignes[i]['fields']['shape']['coordinates'][0]));
       }
       return lignesList;
     } else {
@@ -30,11 +31,12 @@ class LignesRepository {
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
       final List<dynamic> infoLignes = json['records'];
-      for (int i = 0; i < infoLignes.length; i++) {
+      for (var i = 0; i < infoLignes.length; i++) {
         lignesList.add(Lignes.fromJson(
             infoLignes[i]['fields']['route_long_name'].toString(),
             infoLignes[i]['fields']['route_short_name'].toString(),
-            infoLignes[i]['fields']['route_color'].toString()));
+            infoLignes[i]['fields']['route_color'].toString(),
+            infoLignes[i]['fields']['shape']['coordinates'][0]));
       }
       return lignesList;
     } else {

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => Home(arretsRepository: ArretsRepository()),
-        '/lignes': (context) => LignesWidget(),
+        '/lignes': (context) => LignesScreen(lignesRepository: LignesRepository(),),
         '/appbar': (context) => BottomAppBarWidget()
       },
       initialRoute: '/appbar',

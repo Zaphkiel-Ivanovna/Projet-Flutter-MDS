@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
-import 'package:projet_flutter_mds/models/arrets.dart';
+
+import '../repositories/arrets_repository.dart';
 
 void animatedMapMove(MapController mapController, LatLng destLocation,
     double destZoom, TickerProvider vsync) {
@@ -32,25 +32,4 @@ void animatedMapMove(MapController mapController, LatLng destLocation,
   });
 
   controller.forward();
-}
-
-Future<void> performSearch({
-  required MapController mapController,
-  required TickerProvider vsync,
-  required ArretsRepository arretsRepository,
-  required String query,
-  required Function(List<LatLng>) addMarkers,
-}) async {
-  final arretsData = await arretsRepository.fetchData(query: query);
-  final arretsCoords = arretsData["records"]
-      .map<LatLng>((record) => LatLng(
-            record["geometry"]["coordinates"][1],
-            record["geometry"]["coordinates"][0],
-          ))
-      .toList();
-  addMarkers(arretsCoords);
-
-  if (arretsCoords.isNotEmpty) {
-    animatedMapMove(mapController, arretsCoords.first, 18, vsync);
-  }
 }

@@ -38,7 +38,7 @@ class BottomAppBarWidgetState extends ConsumerState<BottomAppBarWidget> {
     super.initState();
     _widgetOptions.addAll([
       Home(arretsRepository: ArretsRepository()),
-      LignesWidget(),
+      LignesScreen(lignesRepository: LignesRepository()),
       Favorite()
     ]);
   }
