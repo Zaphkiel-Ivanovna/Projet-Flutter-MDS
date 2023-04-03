@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
+import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
 import 'package:projet_flutter_mds/ui/screens/lignes_screen.dart';
 
 import '../ui/screens/favorites_screen.dart';
@@ -28,12 +29,16 @@ class BottomAppBarWidget extends StatefulWidget {
 
 class BottomAppBarWidgetState extends State<BottomAppBarWidget> {
   int _selectedIndex = 0;
-  final List <Widget> _widgetOptions = [];
+  final List<Widget> _widgetOptions = [];
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  void initState(){
+  void initState() {
     super.initState();
-    _widgetOptions.addAll([Home(arretsRepository: ArretsRepository()), Lignes(), Favorite()]);
+    _widgetOptions.addAll([
+      Home(arretsRepository: ArretsRepository()),
+      LignesScreen(lignesRepository: LignesRepository()),
+      Favorite()
+    ]);
   }
 
   void _onItemTapped(int index) {
@@ -64,7 +69,7 @@ class BottomAppBarWidgetState extends State<BottomAppBarWidget> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(0xFF8B0000),
         onTap: _onItemTapped,
       ),
     );
