@@ -42,23 +42,27 @@ class _LigneScreenState extends State<LignesScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Rechercher une ligne',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  prefixIcon: Icon(Icons.search),
-                ),
-                onChanged: (value) async {
-                  _updateLignesList(value);
-                },
-              ),
-            ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ValueListenableBuilder<bool>(
+                    valueListenable: _isLoading,
+                    builder: (context, isLoading, child) {
+                      return TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Rechercher une ligne',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          prefixIcon: Icon(Icons.search),
+                        ),
+                        enabled: !_isLoading.value,
+                        onChanged: (value) async {
+                          _updateLignesList(value);
+                        },
+                      );
+                    })),
             Expanded(
               child: Stack(children: [
                 ValueListenableBuilder<List<Lignes>>(
