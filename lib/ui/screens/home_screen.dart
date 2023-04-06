@@ -48,6 +48,8 @@ class _MyAppState extends State<Home> with TickerProviderStateMixin {
               options: MapOptions(
                 center: LatLng(47.4667, -0.55),
                 zoom: 13.0,
+                interactiveFlags:
+                    InteractiveFlag.pinchZoom | InteractiveFlag.drag,
                 maxZoom: 18.0,
               ),
               children: [
@@ -108,26 +110,26 @@ class _MyAppState extends State<Home> with TickerProviderStateMixin {
   }
 
   void addMarkers(List<LatLng> points) {
-  final markers = <Marker>[];
-  for (var point in points) {
-    markers.add(
-      Marker(
-        width: 80.0,
-        height: 80.0,
-        point: point,
-        builder: (ctx) => Container(
-          child: SvgPicture.memory(
-            _busPinData.buffer.asUint8List(),
-            width: 5.0,
-            height: 5.0,
+    final markers = <Marker>[];
+    for (var point in points) {
+      markers.add(
+        Marker(
+          width: 80.0,
+          height: 80.0,
+          point: point,
+          builder: (ctx) => Container(
+            child: SvgPicture.memory(
+              _busPinData.buffer.asUint8List(),
+              width: 5.0,
+              height: 5.0,
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  setState(() {
-    markerLayerOptions = MarkerLayer(markers: markers);
-  });
-}
+    setState(() {
+      markerLayerOptions = MarkerLayer(markers: markers);
+    });
+  }
 }

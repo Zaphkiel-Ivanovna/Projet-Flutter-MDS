@@ -6,7 +6,9 @@ import 'package:flutter_map/plugin_api.dart';
 class ItineraryScreen extends StatelessWidget {
   final List<LatLng> coordinates;
   final String ligneName;
-  ItineraryScreen({Key? key, required this.coordinates, required this.ligneName}) : super(key: key);
+  ItineraryScreen(
+      {Key? key, required this.coordinates, required this.ligneName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,9 @@ class ItineraryScreen extends StatelessWidget {
       ),
       body: FlutterMap(
         options: MapOptions(
-          center: coordinates.isNotEmpty ? coordinates.first : LatLng(47.47, -0.55),
+          center:
+              coordinates.isNotEmpty ? coordinates.first : LatLng(47.47, -0.55),
+          interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
           zoom: 13.0,
           maxZoom: 18.0,
         ),
