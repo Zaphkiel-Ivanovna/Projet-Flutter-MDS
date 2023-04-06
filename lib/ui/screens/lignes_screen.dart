@@ -83,11 +83,16 @@ class _LigneScreenState extends State<LignesScreen> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Center(
-                                child: Text(
-                                  lignes[index].route_short_name,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                child: Padding(
+                                  padding: EdgeInsets.all(4),
+                                  child: FittedBox(
+                                    child: Text(
+                                      lignes[index].route_id.toUpperCase(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -111,7 +116,10 @@ class _LigneScreenState extends State<LignesScreen> {
                             onTap: () {
                               var coordinates = lignes[index]
                                   .coordinates
-                                  .map((coords) => LatLng(coords[1], coords[0]))
+                                  .map((coordsList) => coordsList
+                                      .map((coords) =>
+                                          LatLng(coords[1], coords[0]))
+                                      .toList())
                                   .toList();
                               Navigator.push(
                                 context,
@@ -119,6 +127,7 @@ class _LigneScreenState extends State<LignesScreen> {
                                   builder: (context) => ItineraryScreen(
                                     coordinates: coordinates,
                                     ligneName: lignes[index].route_long_name,
+                                    routeColor: lignes[index].route_color,
                                   ),
                                 ),
                               );
@@ -154,8 +163,12 @@ class _LigneScreenState extends State<LignesScreen> {
   Future<List<Lignes>> _fetchData() async {
     final response = await widget.lignesRepository.fetchData();
     _allLignes = response
-        .map<Lignes>((record) => Lignes.fromJson(record.route_long_name,
-            record.route_short_name, record.route_color, record.coordinates))
+        .map<Lignes>((record) => Lignes.fromJson(
+            record.route_id,
+            record.route_long_name,
+            record.route_short_name,
+            record.route_color,
+            record.coordinates))
         .toList();
     return _allLignes;
   }

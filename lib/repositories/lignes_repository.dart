@@ -13,10 +13,11 @@ class LignesRepository {
       final List<dynamic> infoLignes = json['records'];
       for (int i = 0; i < infoLignes.length; i++) {
         lignesList.add(Lignes.fromJson(
+            infoLignes[i]['fields']['route_id'].toString(),
             infoLignes[i]['fields']['route_long_name'].toString(),
             infoLignes[i]['fields']['route_short_name'].toString(),
             infoLignes[i]['fields']['route_color'].toString(),
-            infoLignes[i]['fields']['shape']['coordinates'][0]));
+            infoLignes[i]['fields']['shape']['coordinates']));
       }
       return lignesList;
     } else {
@@ -33,10 +34,11 @@ class LignesRepository {
       final List<dynamic> infoLignes = json['records'];
       for (var i = 0; i < infoLignes.length; i++) {
         lignesList.add(Lignes.fromJson(
+            infoLignes[i]['fields']['route_id'].toString(),
             infoLignes[i]['fields']['route_long_name'].toString(),
             infoLignes[i]['fields']['route_short_name'].toString(),
             infoLignes[i]['fields']['route_color'].toString(),
-            infoLignes[i]['fields']['shape']['coordinates'][0]));
+            infoLignes[i]['fields']['shape']['coordinates']));
       }
       return lignesList;
     } else {
