@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:herewego/ui/screens/lignes_screen.dart';
 
 import '../provider/lignes_provider.dart';
 import '../repositories/arrets_repository.dart';
 import '../ui/screens/favorites_screen.dart';
 import '../ui/screens/home_screen.dart';
+import '../ui/screens/lignes_screen.dart';
 
 class BottomAppBarW extends ConsumerWidget {
   const BottomAppBarW({super.key});
