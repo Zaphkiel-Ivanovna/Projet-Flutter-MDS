@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:projet_flutter_mds/components/appbar.dart';
-import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
-import 'package:projet_flutter_mds/ui/screens/home_screen.dart';
+import 'package:herewego/components/appbar.dart';
+import 'package:herewego/repositories/arrets_repository.dart';
+import 'package:herewego/repositories/lignes_repository.dart';
+import 'package:herewego/ui/screens/home_screen.dart';
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }

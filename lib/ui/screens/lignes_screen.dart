@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:projet_flutter_mds/models/lignes.dart';
-import 'package:projet_flutter_mds/provider/lignes_provider.dart';
-import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
+import 'package:herewego/provider/lignes_provider.dart';
+import '../../repositories/lignes_repository.dart';
+import '../../models/lignes.dart';
 
 class LignesWidget extends ConsumerStatefulWidget {
   const LignesWidget({super.key});
