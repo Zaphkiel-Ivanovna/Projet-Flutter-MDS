@@ -1,20 +1,24 @@
-name: build
-on: push
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-  build-apk:
+  build:
+    name: 🏗️ Build and Test
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
-        with:
-          java-version: '17.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          flutter-version: '3.7.3'
-          channel: stable
-      - name: Build apk
+      - name: 🔧 Set up Docker
+        uses: docker/setup-docker@v2
+      - name: 🏗️ Build and Test with Docker
         run: |
-          flutter pub get
-          dart format --set-exit-if-changed .
-          flutter analyze
-          flutter build apk --debug
+          docker build -t my-flutter-app .
+          docker run --rm my-flutter-app
+      - name: ⬆️ Upload APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-flutter-app.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
