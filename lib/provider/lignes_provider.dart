@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:herewego/models/lignes.dart';
-import 'package:herewego/repositories/lignes_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/lignes.dart';
+import '../repositories/lignes_repository.dart';
 
 enum ListMode { LIST, SEARCH }
 
