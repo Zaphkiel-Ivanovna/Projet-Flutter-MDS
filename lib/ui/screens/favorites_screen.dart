@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:projet_flutter_mds/provider/lignes_provider.dart';
+import 'package:herewego/provider/lignes_provider.dart';
 
 class Favorite extends ConsumerWidget {
   const Favorite({super.key});

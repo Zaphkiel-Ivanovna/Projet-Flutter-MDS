@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:projet_flutter_mds/provider/lignes_provider.dart';
-import 'package:projet_flutter_mds/ui/screens/itinerary_screen.dart';
+import 'package:herewego/provider/lignes_provider.dart';
+import 'package:herewego/ui/screens/itinerary_screen.dart';
 import '../../repositories/lignes_repository.dart';
 import '../../models/lignes.dart';
 
