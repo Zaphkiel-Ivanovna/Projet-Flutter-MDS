@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../repositories/arrets_repository.dart';
-
 void animatedMapMove(MapController mapController, LatLng destLocation,
     double destZoom, TickerProvider vsync) {
   final latTween = Tween<double>(
