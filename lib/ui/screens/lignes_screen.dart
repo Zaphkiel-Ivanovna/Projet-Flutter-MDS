@@ -69,8 +69,8 @@ class LignesWidgetState extends ConsumerState {
                         .watch(listModeProviderState.notifier)
                         .update((state) => ListMode.SEARCH);
                   }
-                  final LignesRepository lignesRepo = LignesRepository();
-                  List<Lignes> lignesList = await lignesRepo.searchData(value);
+                  final lignesRepo = LignesRepository();
+                  var lignesList = await lignesRepo.searchData(value);
                   setState(() {
                     _lignes = lignesList;
                   });
@@ -113,9 +113,12 @@ class LignesWidgetState extends ConsumerState {
                                 title: Text(data[index].route_long_name),
                                 trailing: IconButton(
                                   onPressed: () {
-                                    ref
-                                        .watch(lignesProvider.notifier)
-                                        .add(data[index]);
+                                    if (!list.any((l) =>
+                                        l.route_id == data[index].route_id)) {
+                                      ref
+                                          .watch(lignesProvider.notifier)
+                                          .add(data[index]);
+                                    }
                                   },
                                   icon: Icon(
                                     list.any((l) =>

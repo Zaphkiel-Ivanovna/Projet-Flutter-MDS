@@ -11,7 +11,7 @@ enum ListMode { LIST, SEARCH }
 final listModeProviderState = StateProvider<ListMode>((_) => ListMode.LIST);
 
 final listModePorvider = Provider<ListMode>((ref) {
-  final ListMode sortType = ref.watch(listModeProviderState);
+  final sortType = ref.watch(listModeProviderState);
 
   switch (sortType) {
     case ListMode.LIST:
@@ -23,7 +23,7 @@ final listModePorvider = Provider<ListMode>((ref) {
 });
 
 final loadLignesPoint = FutureProvider<List<Lignes>>((ref) async {
-  LignesRepository lignes = LignesRepository();
+  var lignes = LignesRepository();
   return await lignes.fetchData();
 });
 
@@ -63,12 +63,15 @@ class Lignesnotifier extends StateNotifier<List<Lignes>> {
 List<String> listJson = [];
 
 getPoint() async {
-  List<Lignes> lignesList = [];
-  Map<String, dynamic> decode = {};
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  listJson = prefs.getStringList("lignes")!.toList();
-  if (listJson.length != 0) {
-    for (int i = 0; i < listJson.length; i++) {
+  var lignesList = <Lignes>[];
+  var decode = <String, dynamic>{};
+  final prefs = await SharedPreferences.getInstance();
+  
+  if (prefs.getStringList("lignes") == null) {
+    listJson = [];
+  } else {
+    listJson = prefs.getStringList("lignes")!;
+    for (var i = 0; i < listJson.length; i++) {
       decode = jsonDecode(listJson[i]);
       lignesList.add(Lignes.fromtest(decode));
     }
@@ -77,7 +80,7 @@ getPoint() async {
 }
 
 Future<void> saveAdr(Lignes lignes) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = await SharedPreferences.getInstance();
   if (prefs.getStringList("lignes") == null) {
     listJson.add(jsonEncode(lignes.toJson()));
   } else {
@@ -88,7 +91,7 @@ Future<void> saveAdr(Lignes lignes) async {
 }
 
 Future<void> deleteAdr(int lignesIndex) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = await SharedPreferences.getInstance();
   listJson = prefs.getStringList('lignes')!;
   listJson.removeAt(lignesIndex);
   prefs.setStringList('lignes', listJson);

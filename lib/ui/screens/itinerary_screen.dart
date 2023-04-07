@@ -107,9 +107,9 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   }
 
   List<Polyline> _buildPolylines() {
-    List<Polyline> polylines = [];
+    var polylines = <Polyline>[];
     if (_selectedRoute == null || _selectedRoute == 0) {
-      for (int i = 0; i < widget.coordinates.length; i++) {
+      for (var i = 0; i < widget.coordinates.length; i++) {
         polylines.add(Polyline(
           points: widget.coordinates[i],
           strokeWidth: 4.0,
@@ -117,7 +117,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         ));
       }
     } else {
-      int index = _selectedRoute! - 1;
+      var index = _selectedRoute! - 1;
       polylines.add(Polyline(
         points: widget.coordinates[index],
         strokeWidth: 4.0,

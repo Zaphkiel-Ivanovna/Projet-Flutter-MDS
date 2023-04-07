@@ -11,7 +11,7 @@ class LignesRepository {
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
       final List<dynamic> infoLignes = json['records'];
-      for (int i = 0; i < infoLignes.length; i++) {
+      for (var i = 0; i < infoLignes.length; i++) {
         lignesList.add(Lignes.fromJson(
             infoLignes[i]['fields']['route_id'].toString(),
             infoLignes[i]['fields']['route_long_name'].toString(),
@@ -26,7 +26,7 @@ class LignesRepository {
   }
 
   Future<List<Lignes>> searchData(String search) async {
-    List<Lignes> lignesList = [];
+    var lignesList = <Lignes>[];
     final response = await http.get(Uri.parse(
         'https://data.angers.fr/api/records/1.0/search/?dataset=irigo_gtfs_lines&q=$search'));
     if (response.statusCode == 200) {
