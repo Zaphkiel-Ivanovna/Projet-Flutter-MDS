@@ -19,8 +19,9 @@ class LignesWidgetState extends ConsumerState {
 
   @override
   Widget build(BuildContext context) {
-    ListMode mode = ref.watch(listModeProviderState);
+    var mode = ref.watch(listModeProviderState);
     final getData = ref.watch(loadLignesPoint);
+    final list = ref.watch(lignesProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF8B0000),
@@ -116,7 +117,16 @@ class LignesWidgetState extends ConsumerState {
                                         .watch(lignesProvider.notifier)
                                         .add(data[index]);
                                   },
-                                  icon: const Icon(Icons.favorite),
+                                  icon: Icon(
+                                    list.any((l) =>
+                                            l.route_id == data[index].route_id)
+                                        ? Icons.favorite_rounded
+                                        : Icons.favorite_border_rounded,
+                                    color: list.any((l) =>
+                                            l.route_id == data[index].route_id)
+                                        ? Colors.red
+                                        : null,
+                                  ),
                                 ),
                                 onTap: () {
                                   var coordinates = data[index]
