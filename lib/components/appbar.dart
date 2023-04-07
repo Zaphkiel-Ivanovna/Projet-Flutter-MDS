@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:projet_flutter_mds/provider/lignes_provider.dart';
 import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
-import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
 import 'package:projet_flutter_mds/ui/screens/lignes_screen.dart';
 
 import '../ui/screens/favorites_screen.dart';
@@ -38,7 +37,7 @@ class BottomAppBarWidgetState extends ConsumerState<BottomAppBarWidget> {
     super.initState();
     _widgetOptions.addAll([
       Home(arretsRepository: ArretsRepository()),
-      LignesScreen(lignesRepository: LignesRepository()),
+      LignesWidget(),
       Favorite()
     ]);
   }

@@ -1,184 +1,179 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:projet_flutter_mds/models/lignes.dart';
 import 'package:projet_flutter_mds/provider/lignes_provider.dart';
-import 'package:projet_flutter_mds/ui/screens/itinerary_screen.dart';
-import '../../repositories/lignes_repository.dart';
-import '../../models/lignes.dart';
+import 'package:projet_flutter_mds/repositories/lignes_repository.dart';
 
-class LignesScreen extends StatefulWidget {
-  final LignesRepository lignesRepository;
-  LignesScreen({Key? key, required this.lignesRepository}) : super(key: key);
+class LignesWidget extends ConsumerStatefulWidget {
+  const LignesWidget({super.key});
 
   @override
-  State<LignesScreen> createState() => _LigneScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => LignesWidgetState();
 }
 
-class _LigneScreenState extends State<LignesScreen> {
-  final ValueNotifier<List<Lignes>> _lignesData =
-      ValueNotifier<List<Lignes>>([]);
-  late List<Lignes> _allLignes;
-  final ValueNotifier<bool> _isLoading = ValueNotifier<bool>(true);
+class LignesWidgetState extends ConsumerState {
+  List<Lignes> _lignes = [];
+  TextEditingController controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchData().then((lignes) {
-      _lignesData.value = lignes;
-      _allLignes = lignes;
-      _isLoading.value = false;
-    });
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
+    ListMode mode = ref.watch(listModeProviderState);
+    final getData = ref.watch(loadLignesPoint);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF8B0000),
-        title: Text('Lignes de transport'),
+        backgroundColor: const Color(0xFF8B0000),
+        title: const Text('Lignes de transport'),
       ),
       body: Container(
-        color: Color(0xFFF2F2F2),
+        color: const Color(0xFFF2F2F2),
         child: Column(
           children: [
             Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ValueListenableBuilder<bool>(
-                    valueListenable: _isLoading,
-                    builder: (context, isLoading, child) {
-                      return TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Rechercher une ligne',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: 'Rechercher une ligne',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: mode == ListMode.SEARCH
+                      ? IconButton(
+                          onPressed: () {
+                            controller.clear();
+                            ref
+                                .watch(listModeProviderState.notifier)
+                                .update((state) => ListMode.LIST);
+                          },
+                          icon: const Icon(
+                            Icons.cancel,
+                            size: 20,
                           ),
-                          prefixIcon: Icon(Icons.search),
-                        ),
-                        enabled: !_isLoading.value,
-                        onChanged: (value) async {
-                          _updateLignesList(value);
-                        },
-                      );
-                    })),
+                        )
+                      : null,
+                ),
+                onChanged: (value) async {
+                  if (value.isEmpty) {
+                    ref
+                        .watch(listModeProviderState.notifier)
+                        .update((state) => ListMode.LIST);
+                  } else {
+                    ref
+                        .watch(listModeProviderState.notifier)
+                        .update((state) => ListMode.SEARCH);
+                  }
+                  final LignesRepository lignesRepo = LignesRepository();
+                  List<Lignes> lignesList = await lignesRepo.searchData(value);
+                  setState(() {
+                    _lignes = lignesList;
+                  });
+                },
+              ),
+            ),
             Expanded(
-              child: Stack(children: [
-                ValueListenableBuilder<List<Lignes>>(
-                  valueListenable: _lignesData,
-                  builder: (context, lignes, child) {
-                    return ListView.separated(
+              child: mode == ListMode.LIST
+                  ? getData.when(
+                      data: (data) {
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              child: ListTile(
+                                leading: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Color(int.parse(
+                                        '0xFF${data[index].route_color}')),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(4),
+                                      child: FittedBox(
+                                        child: Text(
+                                          data[index].route_id.toUpperCase(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                title: Text(data[index].route_long_name),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    ref
+                                        .watch(lignesProvider.notifier)
+                                        .add(data[index]);
+                                  },
+                                  icon: const Icon(Icons.favorite),
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(height: 8);
+                          },
+                          itemCount: data.length,
+                        );
+                      },
+                      error: (Object error, StackTrace stackTrace) {
+                        print(error);
+                        print(stackTrace);
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      loading: () {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    )
+                  : ListView.separated(
                       itemBuilder: (context, index) {
                         return Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
                           child: ListTile(
                             leading: Container(
                               width: 30,
                               height: 30,
                               decoration: BoxDecoration(
                                 color: Color(int.parse(
-                                    '0xFF${lignes[index].route_color}')),
+                                    '0xFF${_lignes[index].route_color}')),
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(4),
-                                  child: FittedBox(
-                                    child: Text(
-                                      lignes[index].route_id.toUpperCase(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                child: Text(
+                                  _lignes[index].route_short_name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
-                            title: Text(lignes[index].route_long_name),
-                            trailing: IconButton(
-                              icon: Icon(
-                                lignes[index].isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: lignes[index].isFavorite
-                                    ? Colors.red
-                                    : null,
-                              ),
-                              onPressed: () {
-                                Provider.of<Lignesnotifier>(context,
-                                        listen: false)
-                                    .toggleFavorite(lignes[index], index);
-                              },
-                            ),
-                            onTap: () {
-                              var coordinates = lignes[index]
-                                  .coordinates
-                                  .map((coordsList) => coordsList
-                                      .map((coords) =>
-                                          LatLng(coords[1], coords[0]))
-                                      .toList())
-                                  .toList();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ItineraryScreen(
-                                    coordinates: coordinates,
-                                    ligneName: lignes[index].route_long_name,
-                                    routeColor: lignes[index].route_color,
-                                  ),
-                                ),
-                              );
-                            },
+                            title: Text(_lignes[index].route_long_name),
                           ),
                         );
                       },
                       separatorBuilder: (context, index) {
                         return SizedBox(height: 8);
                       },
-                      itemCount: lignes.length,
-                    );
-                  },
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _isLoading,
-                  builder: (context, isLoading, child) {
-                    if (isLoading) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      return SizedBox.shrink();
-                    }
-                  },
-                ),
-              ]),
+                      itemCount: _lignes.length,
+                    ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Future<List<Lignes>> _fetchData() async {
-    final response = await widget.lignesRepository.fetchData();
-    _allLignes = response
-        .map<Lignes>((record) => Lignes.fromJson(
-            record.route_id,
-            record.route_long_name,
-            record.route_short_name,
-            record.route_color,
-            record.coordinates))
-        .toList();
-    return _allLignes;
-  }
-
-  void _updateLignesList(String query) {
-    _lignesData.value = _allLignes.where((ligne) {
-      return ligne.route_long_name
-              .toLowerCase()
-              .contains(query.toLowerCase()) ||
-          ligne.route_short_name.toLowerCase().contains(query.toLowerCase());
-    }).toList();
   }
 }
