@@ -1,16 +1,23 @@
 # projet_flutter_mds
 
-A new Flutter project.
+Crétion d'une application s'inspirant de l'app Irigo existante.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+Utilisation de l'api suivante: https://data.angers.fr/explore/dataset/angers-loire-metropole-horaires-reseau-irigo-gtfs-rt/information/
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Irigo est une application mobile Flutter qui vous permet d’explorer les arrêts de bus de votre ville et vous permet de mettre en favoris les lignes que vous souhaitez.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+Requirements</br>
+Flutter 3.7.3
+Dart 2.19.2
+
+
+Features</br>
+Écran de carte: affichez les arrêts de bus avec une barre de recherche.</br>
+Écran Ligne : affiche les lignes de bus du réseau Irigo et permet de rechercher une ligne.</br>
+Écran favori : permet de consulter vos lignes favorites et de les supprimer.</br>
+
+
+
