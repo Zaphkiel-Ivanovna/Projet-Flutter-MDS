@@ -28,11 +28,16 @@ class Favorite extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Center(
-                    child: Text(
-                      list[index].route_short_name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                    child: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: FittedBox(
+                        child: Text(
+                          list[index].route_id.toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),

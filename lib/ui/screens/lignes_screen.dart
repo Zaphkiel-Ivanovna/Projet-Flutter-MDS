@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:herewego/provider/lignes_provider.dart';
+import 'package:herewego/ui/screens/itinerary_screen.dart';
+import 'package:latlong2/latlong.dart';
 import '../../repositories/lignes_repository.dart';
 import '../../models/lignes.dart';
 
@@ -14,9 +16,6 @@ class LignesWidget extends ConsumerStatefulWidget {
 class LignesWidgetState extends ConsumerState {
   List<Lignes> _lignes = [];
   TextEditingController controller = TextEditingController();
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +118,25 @@ class LignesWidgetState extends ConsumerState {
                                   },
                                   icon: const Icon(Icons.favorite),
                                 ),
+                                onTap: () {
+                                  var coordinates = data[index]
+                                      .coordinates
+                                      .map((coordsList) => coordsList
+                                          .map((coords) =>
+                                              LatLng(coords[1], coords[0]))
+                                          .toList())
+                                      .toList();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ItineraryScreen(
+                                        coordinates: coordinates,
+                                        ligneName: data[index].route_long_name,
+                                        routeColor: data[index].route_color,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },
@@ -129,8 +147,6 @@ class LignesWidgetState extends ConsumerState {
                         );
                       },
                       error: (Object error, StackTrace stackTrace) {
-                        print(error);
-                        print(stackTrace);
                         return const Center(child: CircularProgressIndicator());
                       },
                       loading: () {

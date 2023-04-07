@@ -52,13 +52,15 @@ class Lignes {
       route_long_name: json['route_long_name'],
       route_short_name: json['route_short_name'],
       route_color: json['route_color'],
-      coordinates: (json['shape']['coordinates'] as List<dynamic>)
-          .map<List<List<double>>>((route) => (route as List)
-              .map<List<double>>((coordsList) => (coordsList as List)
-                  .map<double>((coords) => coords as double)
+      coordinates: json['shape']?['coordinates'] != null
+          ? (json['shape']['coordinates'] as List<dynamic>)
+              .map<List<List<double>>>((route) => (route as List)
+                  .map<List<double>>((coordsList) => (coordsList as List)
+                      .map<double>((coords) => coords as double)
+                      .toList())
                   .toList())
-              .toList())
-          .toList(),
+              .toList()
+          : [],
       isFavorite: json['isFavorite'] ?? false,
     );
   }

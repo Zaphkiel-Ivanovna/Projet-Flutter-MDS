@@ -23,7 +23,6 @@ final listModePorvider = Provider<ListMode>((ref) {
 
 final loadLignesPoint = FutureProvider<List<Lignes>>((ref) async {
   LignesRepository lignes = LignesRepository();
-  // List<Lignes> lignesList = await lignes.fetchData();
   return await lignes.fetchData();
 });
 
@@ -67,12 +66,9 @@ getPoint() async {
   Map<String, dynamic> decode = {};
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   listJson = prefs.getStringList("lignes")!.toList();
-  print(listJson);
   if (listJson.length != 0) {
     for (int i = 0; i < listJson.length; i++) {
       decode = jsonDecode(listJson[i]);
-      print(decode);
-      print(decode['route_shot_name']);
       lignesList.add(Lignes.fromtest(decode));
     }
   }
