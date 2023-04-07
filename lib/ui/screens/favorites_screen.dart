@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:herewego/provider/lignes_provider.dart';
+
+import '../../provider/lignes_provider.dart';
 
 class Favorite extends ConsumerWidget {
   const Favorite({super.key});
@@ -46,8 +47,8 @@ class Favorite extends ConsumerWidget {
                 trailing: IconButton(
                   onPressed: () {
                     ref
-                        .read(lignesProvider.notifier)
-                        .remove(list[index], index);
+                      .read(lignesProvider.notifier)
+                      .remove(list[index], index);
                   },
                   icon: const Icon(Icons.delete),
                 ),
