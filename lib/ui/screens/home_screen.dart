@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:projet_flutter_mds/repositories/arrets_repository.dart';
-import 'package:projet_flutter_mds/utils/map_utils.dart';
+import 'package:herewego/repositories/arrets_repository.dart';
+import 'package:herewego/utils/map_utils.dart';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 
 class Home extends StatefulWidget {

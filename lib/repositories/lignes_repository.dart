@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:projet_flutter_mds/models/lignes.dart';
+import 'package:herewego/models/lignes.dart';
 
 class LignesRepository {
   Future<List<Lignes>> fetchData() async {
